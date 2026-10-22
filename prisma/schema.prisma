@@ -1,0 +1,87 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Note that some adapters may set a maximum length for the String type by default, please ensure your strings are long
+// enough when changing adapters.
+// See https://www.prisma.io/docs/orm/reference/prisma-schema-reference#string for more information
+datasource db {
+  provider = "sqlite"
+  url      = "file:dev.sqlite"
+}
+
+model Session {
+  id            String    @id
+  shop          String
+  state         String
+  isOnline      Boolean   @default(false)
+  scope         String?
+  expires       DateTime?
+  accessToken   String
+  userId        BigInt?
+  firstName     String?
+  lastName      String?
+  email         String?
+  accountOwner  Boolean   @default(false)
+  locale        String?
+  collaborator  Boolean?  @default(false)
+  emailVerified Boolean?  @default(false)
+  refreshToken        String?
+  refreshTokenExpires DateTime?
+}
+
+// ---------------------------------------------------------------------------
+// FomoPulse models
+// ---------------------------------------------------------------------------
+
+/// Per-shop widget configuration. One row per installed shop.
+model ShopSettings {
+  shop               String   @id
+  enabled            Boolean  @default(true)
+  position           String   @default("bottom-left") // bottom-left | bottom-right | top-left | top-right
+  theme              String   @default("light")       // light | dark
+  accentColor        String   @default("#111111")
+  initialDelaySec    Int      @default(4)
+  displaySec         Int      @default(8)
+  gapSec             Int      @default(12)
+  randomizeGap       Boolean  @default(true)
+  maxPerPage         Int      @default(5)
+  hideOnMobile       Boolean  @default(false)
+  excludedPaths      String   @default("/cart\n/checkouts\n/account")
+  lookbackHours      Int      @default(72)
+  nameStyle          String   @default("first")       // first | initial | anonymous
+  anonymousLabel     String   @default("Someone")
+  showLocation       Boolean  @default(true)
+  showTimeAgo        Boolean  @default(true)
+  purchaseTemplate   String   @default("{{name}} from {{location}} bought {{product}}")
+  roundupsEnabled    Boolean  @default(true)
+  roundupWindowHours Int      @default(24)
+  roundupMinCount    Int      @default(3)
+  roundupTemplate    String   @default("{{count}} people bought {{product}} in the last {{window}}")
+  updatedAt          DateTime @updatedAt
+}
+
+/// One anonymised purchase event. Only the minimum needed to render a
+/// notification is stored: first name, city/region, product. Never email,
+/// surname, street address or order totals.
+model ProofEvent {
+  id           String   @id @default(cuid())
+  shop         String
+  orderId      String
+  productId    String
+  productTitle String
+  productHandle String?
+  imageUrl     String?
+  firstName    String?
+  city         String?
+  province     String?
+  country      String?
+  occurredAt   DateTime
+  createdAt    DateTime @default(now())
+
+  @@unique([shop, orderId, productId])
+  @@index([shop, occurredAt])
+}

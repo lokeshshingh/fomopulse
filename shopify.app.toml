@@ -1,0 +1,45 @@
+# FomoPulse - Shopify app configuration.
+# Run `npm run config:link` to connect this to your own app in the Shopify Partner Dashboard;
+# the CLI fills in client_id / application_url for you.
+client_id = ""
+name = "FomoPulse"
+embedded = true
+
+[access_scopes]
+# read_orders: receive orders/create + import recent orders
+# read_products: product handle + image for each notification
+scopes = "read_orders,read_products"
+
+[app_proxy]
+# Storefront requests to https://<store>/apps/fomopulse/* are forwarded to /proxy/*
+url = "/proxy"
+subpath = "fomopulse"
+prefix = "apps"
+
+[webhooks]
+api_version = "2026-10"
+
+  [[webhooks.subscriptions]]
+  topics = ["orders/create"]
+  uri = "/webhooks/orders/create"
+
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/app/uninstalled"
+  topics = ["app/uninstalled"]
+
+  [[webhooks.subscriptions]]
+  topics = [ "app/scopes_update" ]
+  uri = "/webhooks/app/scopes_update"
+
+  # Mandatory privacy compliance webhooks (required for public / App Store apps)
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/customers/data_request"
+  compliance_topics = ["customers/data_request"]
+
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/customers/redact"
+  compliance_topics = ["customers/redact"]
+
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/shop/redact"
+  compliance_topics = ["shop/redact"]

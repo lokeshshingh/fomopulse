@@ -1,0 +1,34 @@
+{%- comment -%}
+  FomoPulse app embed. Merchants enable it in Theme editor > App embeds.
+  All behaviour is configured in the FomoPulse admin; the feed is served via the
+  Shopify App Proxy at /apps/fomopulse/feed.
+{%- endcomment -%}
+{{ 'fomopulse.css' | asset_url | stylesheet_tag }}
+<script
+  src="{{ 'fomopulse.js' | asset_url }}"
+  defer
+  data-feed="/apps/fomopulse/feed"
+  data-locale="{{ request.locale.iso_code }}"
+  data-close-label="{{ 'close' | t }}"
+  data-region-label="{{ 'region' | t }}"
+  {% if request.design_mode and block.settings.editor_demo %}data-demo="true"{% endif %}
+></script>
+
+{% schema %}
+{
+  "name": "FomoPulse",
+  "target": "body",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Configure messages, timing and position in the FomoPulse app."
+    },
+    {
+      "type": "checkbox",
+      "id": "editor_demo",
+      "label": "Show demo notifications in the theme editor",
+      "default": true
+    }
+  ]
+}
+{% endschema %}
