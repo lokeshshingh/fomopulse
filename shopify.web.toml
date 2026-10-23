@@ -4,4 +4,4 @@ webhooks_path = "/webhooks/app/uninstalled"
 
 [commands]
 predev = "npx prisma generate"
-dev = "npx prisma migrate deploy && npx react-router dev"
+dev = "npx prisma db push --skip-generate && npx react-router dev"
