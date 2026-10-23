@@ -15,7 +15,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("postgresql://fomopulse_db_user:e5CsJ39gaTYpml7x0bwRAB29Z7cRN0rC@dpg-dbdd388ae00c73fosilg-a/fomopulse_db")
+  url      = env("DATABASE_URL")
 }
 
 model Session {
