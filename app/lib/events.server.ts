@@ -89,8 +89,7 @@ export async function recordOrder(shop: string, order: OrderPayload, admin?: Adm
 
 const ORDER_FIELDS_WITH_PII = `
   shippingAddress { firstName city provinceCode countryCodeV2 }
-  billingAddress { firstName city provinceCode countryCodeV2 }
-  customer { firstName }`;
+    billingAddress { firstName city provinceCode countryCodeV2 }`;
 
 const backfillQuery = (withPii: boolean) => `#graphql
   query FomoPulseBackfill($query: String!) {
@@ -143,7 +142,7 @@ export function gqlOrderToPayload(o: GqlOrder): OrderPayload {
  * without it we retry without them and notifications fall back to the anonymous label.
  */
 export async function backfillRecentOrders(admin: AdminGraphql, shop: string, lookbackHours: number) {
-  const since = new Date(Date.now() - lookbackHours * 3600_000).toISOString();
+    const since = new Date(Date.now() - lookbackHours * 3600_000).toISOString().slice(0, 10);
   const variables = { query: `created_at:>=${since}` };
 
   let orders: GqlOrder[] | undefined;
@@ -162,6 +161,7 @@ export async function backfillRecentOrders(admin: AdminGraphql, shop: string, lo
     }
   }
   if (!orders) return { imported: 0, usedPii: false };
+    console.log(`[fomopulse] backfill ${shop}: ${orders.length} order(s) since ${since}, test=${orders.filter((o) => o.test).length}`);
 
   let imported = 0;
   for (const o of orders) {
